@@ -125,9 +125,13 @@ impl AutoSetupSettings {
     }
 
     pub fn to_station(&self) -> Result<StationConfig> {
-        Ok(StationConfig::default()
-            .with_ssid(self.ssid.clone())
-            .with_password(self.psk.clone()))
+        let station = StationConfig::default().with_ssid(self.ssid.clone());
+
+        if self.psk.is_empty() {
+            Ok(station.with_auth_method(esp_radio::wifi::AuthenticationMethod::None))
+        } else {
+            Ok(station.with_password(self.psk.clone()))
+        }
     }
 }
 
