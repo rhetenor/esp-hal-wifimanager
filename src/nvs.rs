@@ -11,8 +11,10 @@ const PART_SIZE: u32 = 0xc00;
 const WIFIMANAGER_NAMESPACE: Key = Key::from_str("wifimanager");
 static NVS_INSTANCES: AtomicU8 = AtomicU8::new(0);
 
+pub type InnerNvs = Rc<Mutex<CriticalSectionRawMutex, esp_nvs::Nvs<FlashStorage<'static>>>>;
+
 pub struct Nvs {
-    inner: Rc<Mutex<CriticalSectionRawMutex, esp_nvs::Nvs<FlashStorage<'static>>>>,
+    inner: InnerNvs,
 
     offset: usize,
     size: usize,
@@ -100,6 +102,14 @@ impl Nvs {
         }
 
         nvs_part.map(|(offset, size)| (offset as usize, size as usize))
+    }
+
+    pub fn new_from_nvs(nvs: InnerNvs, offset: usize, size: usize) -> Self {
+        Self {
+            inner: nvs,
+            offset,
+            size,
+        }
     }
 
     pub async fn get<R>(&self, key: &str) -> crate::Result<R>
