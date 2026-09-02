@@ -127,6 +127,7 @@ async fn web_task(
     signals: Rc<WmInnerSignals>,
     wifi_panel_str: &'static str,
 ) {
+    log::info!("starting http listener...");
     let fut = async {
         let mut rx_buffer = [0; 1024];
         let mut tx_buffer = [0; 1024];
@@ -141,6 +142,7 @@ async fn web_task(
                 continue;
             }
 
+            log::info!("new incoming connection");
             // read req
             let mut total_read = 0;
             loop {

@@ -11,7 +11,7 @@ pub async fn run_dhcp_server(ap_stack: Stack<'static>) {
         end: esp_hal_dhcp_server::Ipv4Addr::new(192, 168, 4, 200),
         leases: Default::default(),
     };
-
+    log::info!("starting dhcp server...");
     let ip = esp_hal_dhcp_server::Ipv4Addr::new(192, 168, 4, 1);
     let res = esp_hal_dhcp_server::run_dhcp_server(
         ap_stack,

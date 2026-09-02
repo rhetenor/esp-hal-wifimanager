@@ -25,6 +25,8 @@ pub async fn spawn_ap(
         dns_servers: Default::default(),
     });
 
+    log::info!("starting access point with ip: {ap_ip:?}");
+
     let (ap_stack, ap_runner) = embassy_net::new(
         ap_interface,
         ap_ip_config,
@@ -37,7 +39,9 @@ pub async fn spawn_ap(
     );
 
     spawner.spawn(crate::ap::ap_task(ap_runner, wm_signals.clone())?);
+    log::info!("access point spawned");
     spawner.spawn(crate::ap::run_dhcp_server(ap_stack)?);
+    log::info!("dhcp spawned");
     crate::http::run_http_server(spawner, ap_stack, wm_signals.clone(), settings.wifi_panel).await;
 
     Ok(())
