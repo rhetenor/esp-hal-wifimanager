@@ -105,6 +105,7 @@ impl Nvs {
     }
 
     pub fn new_from_nvs(nvs: InnerNvs, offset: usize, size: usize) -> Self {
+        NVS_INSTANCES.fetch_add(1, core::sync::atomic::Ordering::Relaxed);
         Self {
             inner: nvs,
             offset,
