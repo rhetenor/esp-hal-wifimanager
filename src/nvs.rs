@@ -1,4 +1,4 @@
-use alloc::rc::Rc;
+use alloc::sync::Arc;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, mutex::Mutex};
 use embedded_storage::ReadStorage;
 use esp_nvs::{Get, Key, Set};
@@ -11,7 +11,7 @@ const PART_SIZE: u32 = 0xc00;
 const WIFIMANAGER_NAMESPACE: Key = Key::from_str("wifimanager");
 static NVS_INSTANCES: AtomicU8 = AtomicU8::new(0);
 
-pub type InnerNvs = Rc<Mutex<CriticalSectionRawMutex, esp_nvs::Nvs<FlashStorage<'static>>>>;
+pub type InnerNvs = Arc<Mutex<CriticalSectionRawMutex, esp_nvs::Nvs<FlashStorage<'static>>>>;
 
 pub struct Nvs {
     inner: InnerNvs,
@@ -47,7 +47,7 @@ impl Nvs {
         let storage = esp_storage::FlashStorage::new(unsafe { flash.clone_unchecked() });
 
         Ok(Nvs {
-            inner: Rc::new(Mutex::new(esp_nvs::Nvs::new(
+            inner: Arc::new(Mutex::new(esp_nvs::Nvs::new(
                 flash_offset,
                 flash_size,
                 storage,
